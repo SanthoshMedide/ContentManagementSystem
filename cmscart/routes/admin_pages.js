@@ -32,13 +32,13 @@ router.get('/add-page', function(req, res){
  */
 router.get('/edit-page/:slug', function (req, res) {
 
-    Page.findById(req.params.slug, function (err, page) {
+    Page.findOne({slug: req.params.slug}, function (err, page) {
         if (err)
             return console.log(err);
 
         res.render('admin/edit_page', {
-            title: page.title,
             slug: page.slug,
+            title: page.title,
             content: page.content,
             id: page._id
         });
@@ -81,8 +81,8 @@ router.post('/edit-page/:slug', function (req, res) {
     if (slug == "")
         slug = title.replace(/\s+/g, '-').toLowerCase();
     var content = req.body.content;
-    var id = req.params.id;
-    
+    var id = req.body.id;
+    console.log("1:"+title);
     var errors = req.validationErrors();
 
     if (errors) {
@@ -95,6 +95,7 @@ router.post('/edit-page/:slug', function (req, res) {
         });
     } else {
         Page.findOne({slug: slug, _id: {'$ne': id}}, function (err, page) {
+        	console.log("2:");
             if (page) {
                 req.flash('danger', 'Page slug exists, choose another.');
                 res.render('admin/edit_page', {
@@ -104,11 +105,15 @@ router.post('/edit-page/:slug', function (req, res) {
                     id: id
                 });
             } else {
-
+            	console.log("3:"+id);
                 Page.findById(id, function (err, page) {
-                    if (err)
+                console.log("4:"+title);
+                    if (err){
+                    	console.log("here");
                         return console.log(err);
-
+                    }
+                    console.log("5:"+title);
+                    console.log(page);
                     page.title = title;
                     page.slug = slug;
                     page.content = content;

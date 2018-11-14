@@ -66,6 +66,17 @@ app.use(function (req, res, next) {
   res.locals.messages = require('express-messages')(req, res);
   next();
 });
+
+//favicon error
+app.use( function(req, res, next) {
+
+  if (req.originalUrl && req.originalUrl.split("/").pop() === 'favicon.ico') {
+    return res.sendStatus(204);
+  }
+
+  return next();
+
+});
 //set routes
 var pages = require('./routes/pages.js');
 var adminPages = require('./routes/admin_pages.js');
@@ -75,7 +86,7 @@ app.use('/', pages);
 app.use('/admin/pages', adminPages);
 app.use('/admin/categories', adminCategories);
 
-var port = 3000;
+var port = 8080;
 app.listen(port, function(){
 	console.log('Server started on port' + port);
 });
